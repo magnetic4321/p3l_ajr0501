@@ -20,9 +20,11 @@ return new class extends Migration
             $table->foreignId('mobil_id');
             $table->foreignId('promo_id')->nullable();
             $table->foreignId('pegawai_id')->nullable();
-            $table->date('tanggal_mulai');
-            $table->date('tanggal_selesai');
-            $table->boolean('status')->default('1');
+            $table->datetime('tanggal_mulai');
+            $table->datetime('tanggal_selesai');
+            $table->datetime('tanggal_pengembalian')->nullable();
+            $table->boolean('status')->default('0');
+            $table->double('biaya')->nullable();
             $table->string('metode_pembayaran');
             $table->float('rating_driver')->nullable();
             $table->text('penilaian_driver')->nullable();

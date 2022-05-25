@@ -13,7 +13,9 @@
                 <label for="mobil_id" class="form-label">Mobil Sewaan</label>
                 <select class="form-select" name="mobil_id" id="mobil_id">
                     @foreach ($mobils as $mobil)
-                        <option value="{{ $mobil->id }}">{{ $mobil->nama }}</option>
+                        @if ($mobil->status == '1')
+                            <option value="{{ $mobil->id }}">{{ $mobil->nama }} - Rp @convert($mobil->tarif)</option>
+                        @endif
                     @endforeach
                 </select>
             </div>
@@ -30,17 +32,19 @@
 
             <div class="mb-3">
                 <label for="driver_id" class="form-label">Driver</label>
-                <select class="form-select" name="driver_id" id="driver_id">
-                    <option value="0">-</option>
-                    @foreach ($drivers as $driver)
-                        <option value="{{ $driver->id }}">{{ $driver->user->nama }}</option>
-                    @endforeach
+                <select class="form-select" name="driver_id" id="driver_id" onchange="showTarifDriver()">
+                    @if (auth()->user()->customer->no_sim != NULL)
+                        <option value="0">-</option>
+                    @endif
+                        @foreach ($drivers as $driver)
+                            <option value="{{ $driver->id }}">{{ $driver->user->nama }} - Rp @convert($driver->tarif)</option>
+                        @endforeach
                 </select>
             </div>
 
             <div class="md-form md-outline input-with-post-icon datepicker form-label mb-3">
                 <label for="tanggal_mulai">Tanggal Mulai</label>
-                <input type="date" name="tanggal_mulai" id="tanggal_mulai" placeholder="Select date" class="form-control @error('tanggal_mulai') is-invalid @enderror" required value="{{ old('tanggal_mulai') }}">
+                <input type="datetime-local" name="tanggal_mulai" id="tanggal_mulai" placeholder="Select date" class="form-control @error('tanggal_mulai') is-invalid @enderror" required value="{{ old('tanggal_mulai') }}">
                 @error('tanggal_mulai')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
@@ -48,7 +52,7 @@
 
             <div class="md-form md-outline input-with-post-icon datepicker form-label mb-3">
                 <label for="tanggal_selesai">Tanggal Selesai</label>
-                <input type="date" name="tanggal_selesai" id="tanggal_selesai" placeholder="Select date" class="form-control @error('tanggal_selesai') is-invalid @enderror" required value="{{ old('tanggal_selesai') }}">
+                <input type="datetime-local" name="tanggal_selesai" id="tanggal_selesai" placeholder="Select date" class="form-control @error('tanggal_selesai') is-invalid @enderror" required value="{{ old('tanggal_selesai') }}">
                 @error('tanggal_selesai')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
@@ -64,19 +68,8 @@
                 @enderror
             </div>
 
-            <div class="mb-3">
-                <label for="bukti_pembayaran" class="form-label">Upload Bukti Pembayaran</label>
-                <input class="form-control @error('bukti_pembayaran') is-invalid @enderror" type="file" id="bukti_pembayaran" name="bukti_pembayaran">
-                @error('bukti_pembayaran')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-
             <button type="submit" class="btn btn-primary mt-2">Submit</button>
         </form>
     </div>
-
 
 @endsection

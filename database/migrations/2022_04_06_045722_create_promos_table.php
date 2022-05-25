@@ -16,10 +16,9 @@ return new class extends Migration
         Schema::create('promos', function (Blueprint $table) {
             $table->id();
             $table->string('kode');
-            // $table->string('jenis');
             $table->string('keterangan');
             $table->integer('diskon');
-            $table->boolean('status')->default(1)->nullable();
+            $table->boolean('status')->default('1');
             $table->timestamps();
         });
     }

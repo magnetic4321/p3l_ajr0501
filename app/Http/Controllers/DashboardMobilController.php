@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Mobil;
 use App\Models\Mitra;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class DashboardMobilController extends Controller
 {
@@ -19,11 +20,17 @@ class DashboardMobilController extends Controller
         $mobils = Mobil::latest();
 
         if(request('search')) {
-            $mobils->where('nama', 'like', '%' . request('search') . '%');
+            $mobils->join('mitras', 'mitras.id', '=', 'mobils.mitra_id')
+                ->where('mobils.nama', 'like', '%' . request('search') . '%')
+                ->orWhere('mitras.nama', 'like', '%' . request('search') . '%')
+                ->orWhere('no_plat', 'like', '%' . request('search') . '%')
+                ->orWhere('tipe', 'like', '%' . request('search') . '%')
+                ->orWhere('fasilitas', 'like', '%' . request('search') . '%')
+                ->select('mobils.*')
+                ->get();
         }
 
         return view('dashboard.mobils.index', [
-            // 'mobils' => Mobil::all()
             'mobils' => $mobils->get()
         ]);
     }

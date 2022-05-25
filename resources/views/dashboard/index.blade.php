@@ -83,7 +83,7 @@
               @else
                 <h6>: Tersedia</h6>
               @endif
-              <h6>: Rp {{ auth()->user()->driver->tarif }}</h6>
+              <h6>: Rp @convert(auth()->user()->driver->tarif)</h6>
               <h6>: <a href="/storage/{{ auth()->user()->driver->napza }}">Click here...</a></h6>
               <h6>: <a href="/storage/{{ auth()->user()->driver->skck }}">Click here...</a></h6>
               <h6>: <a href="/storage/{{ auth()->user()->driver->surat_kejiwaan }}">Click here...</a></h6>

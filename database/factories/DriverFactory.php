@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class DriverFactory extends Factory
 {
+
     /**
      * Define the model's default state.
      *
@@ -23,7 +24,7 @@ class DriverFactory extends Factory
             'status_ketersediaan' => $this->faker->boolean(),
             'no_sim' => $this->faker->e164PhoneNumber(),
             'no_ktp' => $this->faker->nik(),
-            'tarif' => $this->faker->randomElement(['100000', '120000', '150000', '2000000', '2100000', '155000', '165000'])
+            'tarif' => $this->faker->randomElement(['100000', '120000', '150000', '200000', '210000', '155000', '165000'])
         ];
     }
 

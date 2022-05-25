@@ -91,7 +91,7 @@ Route::resource('dashboard/jadwals', DashboardJadwalController::class)->middlewa
 Route::get('dashboard/mitras/checkSlug', [DashboardMitraController::class, 'checkSlug']);
 Route::resource('dashboard/mitras', DashboardMitraController::class)->middleware('auth');
 
-Route::resource('dashboard/mobils', DashboardMobilController::class)->middleware('auth');
+Route::resource('dashboard/mobils', DashboardMobilController::class);
 
 Route::get('dashboard/drivers/checkSlug', [DashboardDriverController::class, 'checkSlug']);
 Route::resource('dashboard/drivers', DashboardDriverController::class)->middleware('auth');
@@ -100,9 +100,13 @@ Route::get('dashboard/customers/checkSlug', [DashboardDriverController::class, '
 Route::resource('dashboard/customers', DashboardCustomerController::class)->middleware('auth');
 
 Route::get('dashboard/transaksis/rating', [DashboardTransaksiController::class, 'indexRating'])->middleware('auth');
+Route::get('dashboard/transaksis/laporan', [DashboardTransaksiController::class, 'laporanTransaksi'])->middleware('auth');
+Route::get('dashboard/transaksis/laporan-customer', [DashboardTransaksiController::class, 'laporanCustomer'])->middleware('auth');
+Route::get('dashboard/transaksis/laporan-driver', [DashboardTransaksiController::class, 'laporanDriver'])->middleware('auth');
 Route::resource('dashboard/transaksis', DashboardTransaksiController::class)->middleware('auth');
 Route::post('dashboard/transaksis/{transaksi:id}/updateBukti', [DashboardTransaksiController::class, 'updateBukti'])->middleware('auth');
 Route::post('dashboard/transaksis/{transaksi:id}/updateStatus', [DashboardTransaksiController::class, 'updateStatus'])->middleware('auth');
+Route::post('dashboard/transaksis/{transaksi:id}/updatePengembalian', [DashboardTransaksiController::class, 'updatePengembalian'])->middleware('auth');
 Route::post('dashboard/transaksis/{transaksi:id}/updateRating', [DashboardTransaksiController::class, 'updateRating'])->middleware('auth');
 
 

@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginApiController;
+use App\Http\Controllers\MobilApiController;
+use App\Http\Controllers\TransaksiApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +20,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/mobils', [MobilApiController::class, 'index']);
+Route::get('/transaksis', [TransaksiApiController::class, 'index']);
+Route::get('/transaksis/laporan', [TransaksiApiController::class, 'laporanTransaksi']);
+Route::post('/login', [LoginApiController::class, 'authenticate']);
+

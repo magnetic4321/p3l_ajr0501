@@ -6,8 +6,12 @@ use App\Models\Transaksi;
 use App\Models\Promo;
 use App\Models\Mobil;
 use App\Models\Driver;
+use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DashboardTransaksiController extends Controller
 {
@@ -21,11 +25,20 @@ class DashboardTransaksiController extends Controller
         $transaksis = Transaksi::latest();
 
         if(request('search')) {
-            $transaksis->where('metode_pembayaran', 'like', '%' . request('search') . '%');
+            $transaksis->select('transaksis.*')
+                    ->join('mobils', 'mobils.id', 'transaksis.mobil_id')
+                    ->join('customers', 'customers.id', 'transaksis.customer_id')
+                    ->join('users', 'users.id', 'customers.user_id')
+                    ->join('promos', 'promos.id', 'transaksis.promo_id')
+                    ->where('metode_pembayaran', 'like', '%' . request('search') . '%')
+                    ->orWhere('users.nama', 'like', '%' . request('search') . '%')
+                    ->orWhere('mobils.nama', 'like', '%' . request('search') . '%')
+                    ->orWhere('promos.kode', 'like', '%' . request('search') . '%')
+                    ->orderBy('id')->get();
         }
 
         return view('dashboard.transaksis.index', [
-            'transaksis' => $transaksis->get()
+            'transaksis' => $transaksis->orderBy('id')->get()
         ]);
     }
 
@@ -33,6 +46,49 @@ class DashboardTransaksiController extends Controller
     {
         return view('dashboard.transaksis.rating', [
             'transaksis' => Transaksi::all()
+        ]);
+    }
+
+    public function laporanTransaksi()
+    {
+        $data = [
+            'transaksis' => Transaksi::where("created_at",">", Carbon::now()->subMonths(6))->get(),
+        ];
+
+        $pdf = \PDF::loadView('dashboard.transaksis.laporanTransaksi', $data);
+        $pdf->setPaper('A4', 'potrait');
+        return $pdf->stream('laporan.pdf');
+
+        // return view('dashboard.transaksis.laporanTransaksi', [
+        //     'transaksis' => Transaksi::where("created_at",">", Carbon::now()->subMonths(6))->get()
+        // ]);
+    }
+
+    public function laporanDriver()
+    {
+        return view ('dashboard.transaksis.laporanDriver', [
+            'data' => DB::select(
+                "SELECT nama, tarif, avg(rating_driver) as 'rating', sum(datediff(tanggal_selesai, tanggal_mulai) * tarif) as 'pendapatan' FROM drivers 
+                JOIN users ON users.id = drivers.user_id
+                JOIN transaksis ON transaksis.driver_id = drivers.id
+                GROUP BY nama ORDER BY pendapatan DESC
+                LIMIT 5"
+            )
+        ]);
+    }
+
+    public function laporanCustomer()
+    {
+        return view ('dashboard.transaksis.laporanCustomer', [
+            'data' => DB::select(
+                "SELECT nama, count(customer_id) as 'jumlah', sum(biaya) as 'subtotal' FROM users
+                JOIN customers ON customers.user_id = users.id
+                JOIN transaksis ON transaksis.customer_id = customers.id
+                WHERE (users.id = customers.user_id
+                    AND transaksis.customer_id = customers.id)
+                GROUP BY nama ORDER BY jumlah DESC
+                LIMIT 5"
+            )
         ]);
     }
 
@@ -68,28 +124,47 @@ class DashboardTransaksiController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'bukti_pembayaran' => 'image|file|max:5120',
             'mobil_id' => 'required',
             'tanggal_mulai' => 'required',
             'tanggal_selesai' => 'required',
             'metode_pembayaran' => 'required',
         ];
 
+        $biaya = [];
+
         // @dd($request);
 
         $validatedData = $request->validate($rules);
-
-        if($request->file('bukti_pembayaran')){
-            $validatedData['bukti_pembayaran'] = $request->file('bukti_pembayaran')->store('bukti_pembayaran');
-        }
-
         $validatedData['customer_id'] = auth()->user()->customer->id;
         $validatedData['driver_id'] = $request->driver_id;
-        $validatedData['pegawai_id'] = '0';
         $validatedData['promo_id'] = $request->promo_id;
-        $validatedData['status'] = '0';
 
-        Transaksi::create($validatedData);
+        $driver = Driver::where('id', $request->driver_id)->first();
+        $mobil = Mobil::where('id', $request->mobil_id)->first();
+        $promo = Promo::where('id', $request->promo_id)->first();
+
+        $biaya['biaya_mobil'] = $mobil->tarif * \Carbon\Carbon::parse( $request->tanggal_mulai )->diffInDays( $request->tanggal_selesai );
+
+        // @dd($promo);
+        if($request->driver_id != '0' && $request->promo_id != '0'){
+            $biaya['biaya_driver'] = $driver->tarif * \Carbon\Carbon::parse( $request->tanggal_mulai )->diffInDays( $request->tanggal_selesai ); 
+            $biaya['biaya_diskon'] = ($biaya['biaya_driver'] + $biaya['biaya_mobil']) * $promo->diskon / 100;
+            $biaya['biaya_total'] = $biaya['biaya_driver'] + $biaya['biaya_mobil'] - $biaya['biaya_diskon'];
+        }elseif($request->driver_id != '0' && $request->promo_id == '0') {
+            $biaya['biaya_driver'] = $driver->tarif * \Carbon\Carbon::parse( $request->tanggal_mulai )->diffInDays( $request->tanggal_selesai ); 
+            $biaya['biaya_total'] = $biaya['biaya_driver'] + $biaya['biaya_mobil'];
+        }elseif($request->driver_id == '0' && $request->promo_id == '0'){
+            $biaya['biaya_total'] = $biaya['biaya_mobil'];
+        }else{
+            $biaya['biaya_diskon'] = $biaya['biaya_mobil'] * $promo->diskon / 100;
+            $biaya['biaya_total'] = $biaya['biaya_mobil'] - $biaya['biaya_diskon'];
+        }
+
+        $validatedData['biaya'] = $biaya['biaya_total'];
+
+        // @dd($biaya);
+
+        $transaksi = Transaksi::create($validatedData);
 
         return redirect('/dashboard/transaksis')->with('success', 'Pemesanan success!!!');
     }
@@ -106,7 +181,6 @@ class DashboardTransaksiController extends Controller
             'transaksi' => $transaksi
         ]);
     }
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -132,11 +206,13 @@ class DashboardTransaksiController extends Controller
 
     public function updateStatus(Request $request, Transaksi $transaksi)
     {
-        $rules = [
-            'status' => 'required',
-        ];
+        // @dd($request);
 
-        $validatedData = $request->validate($rules);
+        if($request['status']){
+            $validatedData['status'] = $request['status'];
+        }elseif($request['tanggal_pengembalian']){
+            $validatedData['tanggal_pengembalian'] = $request['tanggal_pengembalian'];
+        }
         $validatedData['pegawai_id'] = auth()->user()->pegawai->id;
 
         Transaksi::where('id', $transaksi->id)->update($validatedData);
@@ -160,6 +236,11 @@ class DashboardTransaksiController extends Controller
 
         Transaksi::where('id', $transaksi->id)->update($validatedData);
         return redirect('/dashboard/transaksis')->with('success', 'Bukti pembayaran berhasil diupload');
+    }
+
+    public function updatePengembalian(Request $request, Transaksi $transaksi)
+    {
+
     }
 
     public function updateRating(Request $request, Transaksi $transaksi)

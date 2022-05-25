@@ -12,7 +12,10 @@
         </div>
     @endif
 
-    <a href="/dashboard/transaksis/rating" class="btn btn-success btn-sm">Rating Rental ~ ★ {{ $transaksis->avg('rating_rental') }} </a>
+    <a href="/dashboard/transaksis/rating" class="btn btn-success btn-sm">Rating Rental ~ ★ {{ round($transaksis->avg('rating_rental'), 2) }} </a>
+    @if (auth()->user()->role == '1')
+        <a href="/dashboard/transaksis/rating" class="btn btn-success btn-sm">Rating Transaksi Driver ~ ★ {{ round(auth()->user()->driver->transaksis->avg('rating_rental'), 2) }} </a>
+    @endif
 
     @can('customer')
         <a href="/dashboard/transaksis/create" class="btn btn-primary btn-sm">Pesan Transaksi!</a>
@@ -109,6 +112,7 @@
                     <th scope="col">Driver</th>
                     <th scope="col">Tanggal Mulai</th>
                     <th scope="col">Tanggal Selesai</th>
+                    <th scope="col">Durasi (Jam)</th>
                     <th scope="col">Status</th>
                     <th scope="col">Pembayaran</th>
                     <th scope="col">Rating</th>
@@ -151,6 +155,7 @@
                         </td>
                         <td>{{ $transaksi->tanggal_mulai }}</td>
                         <td>{{ $transaksi->tanggal_selesai }}</td>
+                        <td>{{ \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInHours( $transaksi->tanggal_selesai ) }} jam</td>
                         <td>
                             @if ($transaksi->rating_rental)
                                 Selesai

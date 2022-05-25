@@ -11,17 +11,47 @@
     
     <div class="col-lg-9">
         <div class="row mt-4">
-            @foreach ($transaksis as $transaksi)
-                <div class="col-md-6 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $transaksi->customer->user->nama }} ★{{ $transaksi->rating_rental }}</h5>
-                            <a href="/dashboard/transaksi/{{ $transaksi->id }}" class="text-decoration-none"><p class="card-text">{{ $transaksi->penilaian_rental }}</p></a>
-                            <p class="card-text"><small class="text-muted">{{ \Carbon\Carbon::parse( $transaksi->tanggal_selesai )->diffForHumans() }}</small></p>
+            @if (auth()->user()->role == '3')
+                @foreach ($transaksis as $transaksi)
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ $transaksi->customer->user->nama }} ★{{ $transaksi->rating_rental }}</h5>
+                                <p class="card-text">Rating Rental: {{ $transaksi->penilaian_rental }}</p>
+                                <p class="card-text">Rating Driver: {{ $transaksi->penilaian_driver }}</p>
+                                <p class="card-text"><small class="text-muted">{{ \Carbon\Carbon::parse( $transaksi->tanggal_selesai )->diffForHumans() }}</small></p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            @elseif (auth()->user()->role == '2')
+                @foreach (auth()->user()->customer->transaksis as $transaksi)
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ $transaksi->customer->user->nama }} ★{{ $transaksi->rating_rental }}</h5>
+                                <p class="card-text">Rating Rental: {{ $transaksi->penilaian_rental }}</p>
+                                <p class="card-text">Rating Driver: {{ $transaksi->penilaian_driver }}</p>
+                                <p class="card-text"><small class="text-muted">{{ \Carbon\Carbon::parse( $transaksi->tanggal_selesai )->diffForHumans() }}</small></p>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            @elseif (auth()->user()->role == '1')
+                @foreach (auth()->user()->driver->transaksis as $transaksi)
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ $transaksi->customer->user->nama }} ★{{ $transaksi->rating_rental }}</h5>
+                                <p class="card-text">Rating Rental: {{ $transaksi->penilaian_rental }}</p>
+                                <p class="card-text">Rating Driver: {{ $transaksi->penilaian_driver }}</p>
+                                <p class="card-text"><small class="text-muted">{{ \Carbon\Carbon::parse( $transaksi->tanggal_selesai )->diffForHumans() }}</small></p>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
+            
         </div>
     </div>
 

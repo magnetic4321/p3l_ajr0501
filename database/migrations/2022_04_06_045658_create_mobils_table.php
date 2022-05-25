@@ -25,10 +25,11 @@ return new class extends Migration
             $table->integer('kapasitas');
             $table->integer('volume_bagasi');
             $table->string('bahan_bakar');
+            $table->double('tarif')->nullable();
             $table->date('tanggal_servis')->nullable();
             $table->date('kontrak_mulai')->nullable();
             $table->date('kontrak_selesai')->nullable();
-            $table->boolean('status')->default(1)->nullable();
+            $table->boolean('status')->default('1');
             $table->string('foto')->nullable();
             $table->timestamps();
         });

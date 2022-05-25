@@ -103,8 +103,6 @@ class DashboardCustomerController extends Controller
             $validatedData['foto'] = $request->file('foto')->store('foto-customer');
         }
 
-        @dd($validatedData['foto']);
-
         Customer::where('slug', $customer->slug)->update($validatedData);
         User::where('id', $customer->user_id)->update($validatedDataUser);
 

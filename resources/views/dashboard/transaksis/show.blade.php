@@ -9,14 +9,18 @@
                     @elseif($transaksi->driver_id == '0')00 
                     @endif
                     - 0{{ $transaksi->id }}</h1>
+                <h6>{{ $transaksi->created_at }}</h6>
+
             </div>
             <a href="/dashboard/transaksis" class="btn btn-info"><span data-feather="arrow-left"></span> Back</a>
             @if ($transaksi->bukti_pembayaran == NULL)
                 <button type="submit" class="btn btn-danger" disabled>Belum Membayar</button>
             @elseif ($transaksi->bukti_pembayaran != NULL && $transaksi->status == '0')
-                <button type="submit" class="btn btn-warning" disabled>Pembayaran Belum Diverifikasi</button>
-            @elseif ($transaksi->rating_driver == NULL)
-                <button type="submit" class="btn btn-info" disabled>Beri Penilaian Driver dan Rental</button>
+                <button type="submit" class="btn btn-warning" disabled>Menunggu Verifikasi</button>
+            @elseif($transaksi->status == '1' && $transaksi->pegawai_id != NULL && $transaksi->tanggal_pengembalian == NULL)
+                <button type="submit" class="btn btn-dark" disabled>Mobil Belum Dikembalikan</button>
+            @elseif ($transaksi->rating_driver == NULL && $transaksi->status == '1' && $transaksi->tanggal_pengembalian != NULL)
+                <button type="submit" class="btn btn-info" disabled>Penilaian Belum Ada</button>
             @else
                 <button type="submit" class="btn btn-success" disabled>Transaksi Selesai</button>
             @endif
@@ -24,60 +28,288 @@
     </div>
 
     <div class="row mb-3">
-        <div class="col-md-2">
-            <h6>Cust</h6>
-            <h6>CS</h6>
-            <h6>DRV</h6>
-            <h6>PRO</h6>
-        </div>
-        <div class="col">
-            <h6>: {{ $transaksi->customer->user->nama }}</h6>
-            @if ($transaksi->pegawai_id == '0' && $transaksi->bukti_pembayaran != NULL)
-                <h6 class="text-warning">: Belum diverifikasi oleh CS</h6>
-            @elseif ($transaksi->pegawai_id != '0')
-                <h6>: {{ $transaksi->pegawai->user->nama }}</h6>
-            @else
-                <h6 class="text-danger">: Belum Membayar</h6>
-            @endif
-            @if ($transaksi->driver_id == '0')
-                <h6>: -</h6>
-            @else
-                <h6>: {{ $transaksi->driver->user->nama }}</h6>
-            @endif
-            @if ($transaksi->promo_id == '0')
-                <h6>: -</h6>
-            @else
-                <h6>: {{ $transaksi->promo->kode }}</h6>
-            @endif
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-2">
-            <h6>Tgl Mulai</h6>
-            <h6>Tgl Selesai</h6>
-        </div>
-        <div class="col">
-            <h6>: {{ $transaksi->tanggal_mulai }}</h6>
-            <h6>: {{ $transaksi->tanggal_selesai }}</h6>
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-2">
-            <h6>Mobil</h6>
-        </div>
-        <div class="col">
-            <h6>: {{ $transaksi->mobil->nama }}</h6>
+        <div class="col-lg-8 border">
+            <div class="row mb-3 pt-3">
+                <div class="col-md-2">
+                    <h6>Cust</h6>
+                    <h6>CS</h6>
+                    <h6>DRV</h6>
+                    <h6>PRO</h6>
+                </div>
+                <div class="col">
+                    <h6>: {{ $transaksi->customer->user->nama }}</h6>
+                    @if ($transaksi->pegawai_id == '0' && $transaksi->bukti_pembayaran != NULL)
+                        <h6 class="text-warning">: Belum diverifikasi oleh CS</h6>
+                    @elseif ($transaksi->pegawai_id != NULL)
+                        <h6>: {{ $transaksi->pegawai->user->nama }}</h6>
+                    @else
+                        <h6 class="text-danger">: Belum Membayar</h6>
+                    @endif
+                    @if ($transaksi->driver_id == '0')
+                        <h6>: -</h6>
+                    @else
+                        <h6>: {{ $transaksi->driver->user->nama }}</h6>
+                    @endif
+                    @if ($transaksi->promo_id == '0')
+                        <h6>: -</h6>
+                    @else
+                        <h6>: {{ $transaksi->promo->kode }} - {{ $transaksi->promo->diskon }}%</h6>
+                    @endif
+                </div>
+            </div>
+        
+            <div class="row mb-3">
+                <div class="col-md-2">
+                    <h6>Tgl Mulai</h6>
+                    <h6>Tgl Selesai</h6>
+                    <h6>Tgl Pengembalian</h6>
+                </div>
+                <div class="col">
+                    <h6>: {{ $transaksi->tanggal_mulai }}</h6>
+                    <h6>: {{ $transaksi->tanggal_selesai }}</h6>
+                    <h6>: {{ $transaksi->tanggal_pengembalian }}</h6>
+                </div>
+            </div>
+        
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Satuan</th>
+                            <th>Durasi</th>
+                            <th>Sub Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ $transaksi->mobil->nama }}</td>
+                            <td>
+                                Rp @convert($transaksi->mobil->tarif)
+                            </td>
+                            <td>{{ \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai ) }} Hari</td>
+                            <td>
+                                Rp @convert( $transaksi->mobil->tarif * \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai ))
+                            </td>
+                        </tr>
+                        @if ($transaksi->driver_id != '0' && $transaksi->promo_id != '0')
+                        {{-- DRIVER + PROMO --}}
+                            <tr>
+                                {{-- Hitung Tarif Driver ---------------------------------}}
+                                <td>{{ $transaksi->driver->user->nama }}</td>
+                                <td>
+                                    Rp @convert($transaksi->driver->tarif)
+                                </td>
+                                <td>{{ \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai ) }} Hari</td>
+                                <td>Rp @convert( $transaksi->driver->tarif * \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai ))</td>
+                            </tr>
+                            <tr>
+                                {{-- Hitung Subtotal Dengan Driver ---------------------------------}}
+                                <td colspan="3"><br/></td>
+                                <td>
+                                    <b>
+                                        Rp @convert($transaksi->mobil->tarif * \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai ) + $transaksi->driver->tarif * \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai ))
+                                    </b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"><br/></td>
+                            </tr>
+                            <tr>
+                                {{-- Hitung Diskon Dengan Driver ---------------------------------}}
+                                <td><b>Cust</b></td>
+                                <td><b>CS</b></td>
+                                <td>Diskon</td>
+                                <td>
+                                    Rp @convert(($transaksi->mobil->tarif * \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai ) + $transaksi->driver->tarif * \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai )) * $transaksi->promo->diskon / 100)
+                                </td>
+                            </tr>
+                            <tr>
+                                {{-- Hitung Denda Dengan Driver ----------------------------}}
+                                <td colspan="2"><br/></td>
+                                <td>Denda</td>
+                                @if (\Carbon\Carbon::parse( $transaksi->tanggal_pengembalian )->diffInHours( $transaksi->tanggal_selesai, false ) < -2)
+                                    <td>
+                                        Rp @convert($transaksi->mobil->tarif + $transaksi->driver->tarif)
+                                    </td>
+                                @endif
+                            </tr>
+                            <tr>
+                                <td colspan="2"><br/></td>
+                                <td>Total</td>
+                                <td>
+                                    <b>
+                                        @if (\Carbon\Carbon::parse( $transaksi->tanggal_pengembalian )->diffInHours( $transaksi->tanggal_selesai, false ) < -2)
+                                            Rp @convert($transaksi->biaya + $transaksi->mobil->tarif + $transaksi->driver->tarif)
+                                        @else
+                                            Rp @convert($transaksi->biaya)
+                                        @endif
+                                    </b>
+                                </td>
+                            </tr>
+                        @elseif ($transaksi->driver_id != '0' && $transaksi->promo_id == '0')
+                        {{-- DRIVER ONLY --}}
+                            <tr>
+                                {{-- Hitung Subtotal Tanpa Driver ---------------------------------}}
+                                <td colspan="3"><br/></td>
+                                <td>
+                                    <b>
+                                        Rp @convert($transaksi->mobil->tarif * \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai ) * \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai ))
+                                    </b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"><br/></td>
+                            </tr>
+                            <tr>
+                                {{-- Hitung Diskon Tanpa Driver ---------------------------------}}
+                                <td><b>Cust</b></td>
+                                <td><b>CS</b></td>
+                                <td>Diskon</td>
+                                @if ($transaksi->promo_id != '0')
+                                    <td>
+                                        Rp @convert(($transaksi->mobil->tarif * \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai ) * \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai )) * $transaksi->promo->diskon / 100)
+                                    </td>
+                                @endif
+                            </tr>
+                            <tr>
+                                {{-- Hitung Denda Tanpa Driver ---------------------------------}}
+                                <td colspan="2"><br/></td>
+                                <td>Denda</td>
+                                @if (\Carbon\Carbon::parse( $transaksi->tanggal_pengembalian )->diffInHours( $transaksi->tanggal_selesai, false ) < -2)
+                                    <td>
+                                        Rp @convert($transaksi->mobil->tarif + $transaksi->driver->tarif)
+                                    </td>
+                                @endif
+                            </tr>
+                            <tr>
+                                <td colspan="2"><br/></td>
+                                <td>Total</td>
+                                <td>
+                                    <b>
+                                        @if (\Carbon\Carbon::parse( $transaksi->tanggal_pengembalian )->diffInHours( $transaksi->tanggal_selesai, false ) < -2)
+                                            Rp @convert($transaksi->biaya + $transaksi->mobil->tarif + $transaksi->driver->tarif)
+                                        @else
+                                            Rp @convert($transaksi->biaya)
+                                        @endif
+                                    </b>
+                                </td>
+                            </tr>
+                        @elseif ($transaksi->driver_id == '0' && $transaksi->promo_id != '0')
+                        {{-- PROMO TANPA DRIVER --}}
+                            <tr>
+                                {{-- Hitung Subtotal Dengan Driver ---------------------------------}}
+                                <td colspan="3"><br/></td>
+                                <td>
+                                    <b>
+                                        Rp @convert($transaksi->mobil->tarif * \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai ))
+                                    </b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"><br/></td>
+                            </tr>
+                            <tr>
+                                {{-- Hitung Diskon Dengan Driver ---------------------------------}}
+                                <td><b>Cust</b></td>
+                                <td><b>CS</b></td>
+                                <td>Diskon</td>
+                                <td>
+                                    Rp @convert(($transaksi->mobil->tarif * \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai ) * $transaksi->promo->diskon / 100))
+                                </td>
+                            </tr>
+                            <tr>
+                                {{-- Hitung Denda Dengan Driver ----------------------------}}
+                                <td colspan="2"><br/></td>
+                                <td>Denda</td>
+                                @if (\Carbon\Carbon::parse( $transaksi->tanggal_pengembalian )->diffInHours( $transaksi->tanggal_selesai, false ) < -2)
+                                    <td>
+                                        Rp @convert($transaksi->mobil->tarif)
+                                    </td>
+                                @endif
+                            </tr>
+                            <tr>
+                                <td colspan="2"><br/></td>
+                                <td>Total</td>
+                                <td>
+                                    <b>
+                                        @if (\Carbon\Carbon::parse( $transaksi->tanggal_pengembalian )->diffInHours( $transaksi->tanggal_selesai, false ) < -2)
+                                            Rp @convert($transaksi->biaya + $transaksi->mobil->tarif)
+                                        @else
+                                            Rp @convert($transaksi->biaya)
+                                        @endif
+                                    </b>
+                                </td>
+                            </tr>
+                        @elseif ($transaksi->driver_id == '0' && $transaksi->promo_id == '0')
+                        {{-- TANPA PROMO TANPA DRIVER --}}
+                            <tr>
+                                {{-- Hitung Subtotal Dengan Driver ---------------------------------}}
+                                <td colspan="3"><br/></td>
+                                <td>
+                                    <b>
+                                        Rp @convert($transaksi->mobil->tarif * \Carbon\Carbon::parse( $transaksi->tanggal_mulai )->diffInDays( $transaksi->tanggal_selesai ))
+                                    </b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"><br/></td>
+                            </tr>
+                            <tr>
+                                {{-- Hitung Diskon Dengan Driver ---------------------------------}}
+                                <td><b>Cust</b></td>
+                                <td><b>CS</b></td>
+                                <td>Diskon</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                {{-- Hitung Denda Dengan Driver ----------------------------}}
+                                <td colspan="2"><br/></td>
+                                <td>Denda</td>
+                                @if (\Carbon\Carbon::parse( $transaksi->tanggal_pengembalian )->diffInHours( $transaksi->tanggal_selesai, false ) < 2)
+                                    <td>
+                                        Rp @convert($transaksi->mobil->tarif)
+                                    </td>
+                                @endif
+                            </tr>
+                            <tr>
+                                <td colspan="2"><br/></td>
+                                <td>Total</td>
+                                <td>
+                                    <b>
+                                        @if (\Carbon\Carbon::parse( $transaksi->tanggal_pengembalian )->diffInHours( $transaksi->tanggal_selesai, false ) < -2)
+                                            Rp @convert($transaksi->biaya + $transaksi->mobil->tarif)
+                                        @else
+                                            Rp @convert($transaksi->biaya)
+                                        @endif
+                                    </b>
+                                </td>
+                            </tr>
+                        @endif
+                        <tr>
+                            <td>{{ $transaksi->customer->user->nama }}</td>
+                            @if($transaksi->pegawai_id != NULL)
+                                <td>{{ $transaksi->pegawai->user->nama }}</td>
+                            @else
+                                <td class = text-danger>
+                                    <b>
+                                        Belum Membayar
+                                    </b>
+                                </td>
+                            @endif
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <form method="post" action="/dashboard/transaksis/{{ $transaksi->id }}/updateStatus">
         @csrf
         @can('pegawai')
-            @if($transaksi->status == '0' && $transaksi->bukti_pembayaran != NULL)
+            @if($transaksi->status == '0' && $transaksi->pegawai_id == NULL && $transaksi->bukti_pembayaran != NULL)
                 <div class="mb-3 col-md-2">
-                    <label for="status" class="form-label">Status Pembayaran</label>
+                    <label for="status" class="form-label"><h6><a href="/storage/{{ $transaksi->bukti_pembayaran }}">Bukti Pembayaran</a></h6></label>
                     <select name="status" id="status" class="form-select @error('status') is-invalid @enderror" required value="{{ old('status') }}">
                         <option value="0">Belum Terverifikasi</option>
                         <option value="1">Terverifikasi</option>
@@ -89,9 +321,10 @@
                     @enderror
                 </div>
                 <button type="submit" class="btn btn-primary">Update Status</button>
+            @elseif($transaksi->status == '1' && $transaksi->pegawai_id != NULL && $transaksi->tanggal_pengembalian == NULL)
+                <button type="submit" class="btn btn-success" name="tanggal_pengembalian" value="{{ Carbon\Carbon::now('GMT+7') }}" onclick="return confirm('Are you sure?')">Konfirmasi Mobil Kembali</button>
             @elseif($transaksi->status == '1')
-                <button type="submit" class="btn btn-success" disabled>Sudah Terverifikasi</button>
-
+                <button type="submit" class="btn btn-success" disabled>Transaksi Selesai</button>
             @endif
         @endcan
     </form>
@@ -117,11 +350,11 @@
         </form>
     @endif
 
-
-    <form method="post" action="/dashboard/transaksis/{{ $transaksi->id }}/updateRating">
-        @csrf
         @can('customer')
-            @if($transaksi->penilaian_rental == NULL && $transaksi->status == '1' && $transaksi->pegawai_id != '0')
+            @if($transaksi->penilaian_rental == NULL && $transaksi->status == '1' && $transaksi->pegawai_id != '0' && $transaksi->tanggal_pengembalian != NULL)
+            {{-- Input Penilaian Driver dan Rental --}}
+            <form method="post" action="/dashboard/transaksis/{{ $transaksi->id }}/updateRating">
+                @csrf
                 <div class="col-md-1">
                     <label for="rating_driver" class="form-label">Penilaian Driver</label>
                     <select name="rating_driver" id="rating_driver" class="form-select @error('rating_driver') is-invalid @enderror" required value="{{ old('rating_driver') }}">
@@ -175,6 +408,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary mt-3">Beri Rating</button>
             @elseif($transaksi->penilaian_rental != NULL && $transaksi->bukti_pembayaran != NULL)
+            {{-- Show Penilaian --}}
                 <div class="row mb-5 border-bottom">
                     <div class="col-md-2 mt-3">
                         <h6>Rating Driver</h6>

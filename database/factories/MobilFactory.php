@@ -28,6 +28,7 @@ class MobilFactory extends Factory
             'no_stnk' => $faker->vin(),
             'tipe' => $faker->vehicleType(),
             'fasilitas' => implode(', ', $faker->randomElements(['AC', 'Media Player', 'Air Bag', 'Safety Measure', 'Rear Camera', 'Wifi'], mt_rand(1, 4))),
+            'tarif' => $faker->randomElement(['100000', '120000', '150000', '200000', '210000', '155000', '165000']),
             'warna' => $faker->safeColorName(),
             'kapasitas' => $faker->vehicleSeatCount(),
             'volume_bagasi' => $faker->numberBetween(0, 10),
@@ -35,7 +36,6 @@ class MobilFactory extends Factory
             'tanggal_servis' => $faker->dateTimeBetween('-120 week', '-20 week'),
             'kontrak_mulai' => $faker->dateTimeBetween('-100 week', '-10 week'),
             'kontrak_selesai' => $faker->dateTimeBetween('-5 week', '+100 week'),
-            'status' => $faker->boolean(),
         ];
     }
 }

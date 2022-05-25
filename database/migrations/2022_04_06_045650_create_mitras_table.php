@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('alamat');
             $table->string('no_telp');
             $table->string('no_ktp')->unique();
+            $table->boolean('status')->default('1');
             $table->timestamps();
         });
     }
