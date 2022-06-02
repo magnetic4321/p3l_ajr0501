@@ -10,6 +10,8 @@
 
   <!-- Custom styles for this template -->
   <link href="/css/dashboard.css" rel="stylesheet">
+
+  <link rel="shortcut icon" href="img/ajr.png">
 </head>
 <body>
   @include('dashboard.layouts.header')

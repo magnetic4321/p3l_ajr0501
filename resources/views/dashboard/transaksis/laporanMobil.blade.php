@@ -52,8 +52,9 @@
         #generated {
             font-size: 13px;
             display: flex; 
-            justify-content: flex-end;
             text-align: right;
+            justify-content: flex-end;
+            
         }
 
     </style>
@@ -65,36 +66,36 @@
 </head>
 <body>
     <span class="heading">ATMA JAYA RENTAL</span>
-    <p>Top 5 freelancer drivers has {{ $count }} total transactions.</p>
-
+    <p>Earnings Rp @convert($pendapatan_total) based on {{ $count }} total transactions.</p>
     <hr style="border:3px solid #f1f1f1">
 
     <div class="table-responsive col-lg-12 py-2">
-        <h3 id="transaksis-title">{{ $tahun }}/{{ strtoupper(DateTime::createFromFormat('!m', $bulan)->format('F')) }} TOP 5 DRIVERS </h3>
+        <h3 id="transaksis-title">{{ $tahun }}/{{ strtoupper(DateTime::createFromFormat('!m', $bulan)->format('F')) }} CAR REPORT </h3>
         <p id="generated">Generated at {{ \Carbon\Carbon::now('GMT+7')->toDayDateTimeString() }}</p>
 
         <table class="table table-striped table-sm" id="transaksis">
             <thead>
                 <tr>
-                    <th scope="col">ID Driver</th>
-                    <th scope="col">Nama Driver</th>
+                    <th scope="col">#</th>
+                    <th scope="col">Tipe Mobil</th>
+                    <th scope="col">Nama Mobil</th>
+                    <th scope="col">Plat Nomor Mobil</th>
                     <th scope="col">Jumlah Transaksi</th>
-                    <th scope="col">Rerata Rating</th>
-                    <th scope="col">Total Pendapatan</th>
+                    <th scope="col">Pendapatan</th>
                 </tr>
             </thead>
 
             <tbody>
-                @foreach($drivers as $driver)
+                @foreach($mobils as $mobil)
                     <tr>
-                        <td>DRV-{{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $driver->created_at)->format('d') }}{{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $driver->created_at)->format('m') }}{{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $driver->created_at)->format('y') }}00{{ $driver->id }}</td>
-                        <td>{{ $driver->nama }}</td>
-                        <td>{{ $driver->jumlah_transaksi }}</td>
-                        <td>{{ round($driver->rating, 2) }}</td>
-                        <td>Rp @convert($driver->pendapatan)</td>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $mobil->tipe }}</td>
+                        <td>{{ $mobil->nama_mobil }}</td>
+                        <td>{{ $mobil->no_plat }}</td>
+                        <td>{{ $mobil->jumlah }}</td>
+                        <td>Rp @convert($mobil->subtotal)</td>
                     </tr>
                 @endforeach
-                {{-- @dd($drivers) --}}
             </tbody>
         </table>
     </div>

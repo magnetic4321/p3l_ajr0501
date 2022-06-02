@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mobil;
+use App\Models\Promo;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class MobilApiController extends Controller
+class PromoApiController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,19 +16,19 @@ class MobilApiController extends Controller
      */
     public function index()
     {
-        $mobils = Mobil::orderBy('tipe', 'ASC')->get();
+        $promos = Promo::orderBy('created_at', 'DESC')->get();
         $response = [
-            'message' => 'List mobil order by time',
-            'data'  => $mobils
+            'message' => 'List promo order by time',
+            'promos'  => $promos
         ];
 
         $data = [
-            'mobils' => $mobils
+            'promos' => $promos
         ];
 
-        $pdf = PDF::loadView('dashboard.transaksis.mobilList', $data);
+        $pdf = PDF::loadView('dashboard.transaksis.promoList', $data);
         $pdf->setPaper('A4', 'potrait');
-        return $pdf->download('mobil-list.pdf');
+        return $pdf->download('promo-list.pdf');
 
         return response()->json($response, Response::HTTP_OK);
     }
@@ -47,10 +47,10 @@ class MobilApiController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Mobil  $mobil
+     * @param  \App\Models\Promo  $promo
      * @return \Illuminate\Http\Response
      */
-    public function show(Mobil $mobil)
+    public function show(Promo $promo)
     {
         //
     }
@@ -59,10 +59,10 @@ class MobilApiController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Mobil  $mobil
+     * @param  \App\Models\Promo  $promo
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Mobil $mobil)
+    public function update(Request $request, Promo $promo)
     {
         //
     }
@@ -70,10 +70,10 @@ class MobilApiController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Mobil  $mobil
+     * @param  \App\Models\Promo  $promo
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Mobil $mobil)
+    public function destroy(Promo $promo)
     {
         //
     }

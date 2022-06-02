@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Dompdf\Dompdf;
 
 class DashboardTransaksiController extends Controller
 {
@@ -46,49 +47,6 @@ class DashboardTransaksiController extends Controller
     {
         return view('dashboard.transaksis.rating', [
             'transaksis' => Transaksi::all()
-        ]);
-    }
-
-    public function laporanTransaksi()
-    {
-        $data = [
-            'transaksis' => Transaksi::where("created_at",">", Carbon::now()->subMonths(6))->get(),
-        ];
-
-        $pdf = \PDF::loadView('dashboard.transaksis.laporanTransaksi', $data);
-        $pdf->setPaper('A4', 'potrait');
-        return $pdf->stream('laporan.pdf');
-
-        // return view('dashboard.transaksis.laporanTransaksi', [
-        //     'transaksis' => Transaksi::where("created_at",">", Carbon::now()->subMonths(6))->get()
-        // ]);
-    }
-
-    public function laporanDriver()
-    {
-        return view ('dashboard.transaksis.laporanDriver', [
-            'data' => DB::select(
-                "SELECT nama, tarif, avg(rating_driver) as 'rating', sum(datediff(tanggal_selesai, tanggal_mulai) * tarif) as 'pendapatan' FROM drivers 
-                JOIN users ON users.id = drivers.user_id
-                JOIN transaksis ON transaksis.driver_id = drivers.id
-                GROUP BY nama ORDER BY pendapatan DESC
-                LIMIT 5"
-            )
-        ]);
-    }
-
-    public function laporanCustomer()
-    {
-        return view ('dashboard.transaksis.laporanCustomer', [
-            'data' => DB::select(
-                "SELECT nama, count(customer_id) as 'jumlah', sum(biaya) as 'subtotal' FROM users
-                JOIN customers ON customers.user_id = users.id
-                JOIN transaksis ON transaksis.customer_id = customers.id
-                WHERE (users.id = customers.user_id
-                    AND transaksis.customer_id = customers.id)
-                GROUP BY nama ORDER BY jumlah DESC
-                LIMIT 5"
-            )
         ]);
     }
 

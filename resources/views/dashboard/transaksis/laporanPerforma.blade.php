@@ -65,12 +65,11 @@
 </head>
 <body>
     <span class="heading">ATMA JAYA RENTAL</span>
-    <p>Top 5 freelancer drivers has {{ $count }} total transactions.</p>
-
+    <p>The performance of drivers out of {{ $count }} total transactions.</p>
     <hr style="border:3px solid #f1f1f1">
 
     <div class="table-responsive col-lg-12 py-2">
-        <h3 id="transaksis-title">{{ $tahun }}/{{ strtoupper(DateTime::createFromFormat('!m', $bulan)->format('F')) }} TOP 5 DRIVERS </h3>
+        <h3 id="transaksis-title">{{ $tahun }}/{{ strtoupper(DateTime::createFromFormat('!m', $bulan)->format('F')) }} DRIVERS PERFORMANCE </h3>
         <p id="generated">Generated at {{ \Carbon\Carbon::now('GMT+7')->toDayDateTimeString() }}</p>
 
         <table class="table table-striped table-sm" id="transaksis">
@@ -80,19 +79,17 @@
                     <th scope="col">Nama Driver</th>
                     <th scope="col">Jumlah Transaksi</th>
                     <th scope="col">Rerata Rating</th>
-                    <th scope="col">Total Pendapatan</th>
                 </tr>
             </thead>
 
             <tbody>
                 @foreach($drivers as $driver)
-                    <tr>
-                        <td>DRV-{{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $driver->created_at)->format('d') }}{{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $driver->created_at)->format('m') }}{{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $driver->created_at)->format('y') }}00{{ $driver->id }}</td>
-                        <td>{{ $driver->nama }}</td>
-                        <td>{{ $driver->jumlah_transaksi }}</td>
-                        <td>{{ round($driver->rating, 2) }}</td>
-                        <td>Rp @convert($driver->pendapatan)</td>
-                    </tr>
+                <tr>
+                    <td>DRV-{{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $driver->created_at)->format('d') }}{{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $driver->created_at)->format('m') }}{{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $driver->created_at)->format('y') }}00{{ $driver->id }}</td>
+                    <td>{{ $driver->nama }}</td>
+                    <td>{{ $driver->jumlah_transaksi }}</td>
+                    <td>{{ round($driver->rating, 2) }}</td>
+                </tr>
                 @endforeach
                 {{-- @dd($drivers) --}}
             </tbody>

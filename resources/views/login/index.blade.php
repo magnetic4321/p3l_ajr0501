@@ -2,6 +2,8 @@
 
 @section('container')
 
+<link rel="shortcut icon" href="img/ajr.png">
+
 <div class="row justify-content-center">
     <div class="col-md-5">
 

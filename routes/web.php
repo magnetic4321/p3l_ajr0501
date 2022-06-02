@@ -100,9 +100,12 @@ Route::get('dashboard/customers/checkSlug', [DashboardDriverController::class, '
 Route::resource('dashboard/customers', DashboardCustomerController::class)->middleware('auth');
 
 Route::get('dashboard/transaksis/rating', [DashboardTransaksiController::class, 'indexRating'])->middleware('auth');
-Route::get('dashboard/transaksis/laporan', [DashboardTransaksiController::class, 'laporanTransaksi'])->middleware('auth');
-Route::get('dashboard/transaksis/laporan-customer', [DashboardTransaksiController::class, 'laporanCustomer'])->middleware('auth');
-Route::get('dashboard/transaksis/laporan-driver', [DashboardTransaksiController::class, 'laporanDriver'])->middleware('auth');
+// Route::get('dashboard/transaksis/laporan', [DashboardTransaksiController::class, 'laporanTransaksi'])->middleware('auth');
+// Route::get('dashboard/transaksis/laporan-customer', [DashboardTransaksiController::class, 'laporanCustomer'])->middleware('auth');
+// Route::get('dashboard/transaksis/laporan-driver', [DashboardTransaksiController::class, 'laporanDriver'])->middleware('auth');
+// Route::get('dashboard/transaksis/laporan-mobil', [DashboardTransaksiController::class, 'laporanMobil'])->middleware('auth');
+// Route::get('dashboard/transaksis/laporan-performa', [DashboardTransaksiController::class, 'laporanPerforma'])->middleware('auth');
+
 Route::resource('dashboard/transaksis', DashboardTransaksiController::class)->middleware('auth');
 Route::post('dashboard/transaksis/{transaksi:id}/updateBukti', [DashboardTransaksiController::class, 'updateBukti'])->middleware('auth');
 Route::post('dashboard/transaksis/{transaksi:id}/updateStatus', [DashboardTransaksiController::class, 'updateStatus'])->middleware('auth');

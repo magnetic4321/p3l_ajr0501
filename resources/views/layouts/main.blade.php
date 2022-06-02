@@ -14,6 +14,9 @@
     {{-- App Style --}}
     <link rel="stylesheet" href="/css/style.css">
 
+    <link rel="shortcut icon" href="img/ajr.png">
+    
+
     <title>AJR | {{ $title }}</title>
   </head>
   <body>

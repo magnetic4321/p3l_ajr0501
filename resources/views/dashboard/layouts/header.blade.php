@@ -1,4 +1,6 @@
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+  <link rel="shortcut icon" href="img/ajr.png">
+
     <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/dashboard">ATMA Jogja Rental | 
       @if(auth()->user()->role == '1')
         Driver
