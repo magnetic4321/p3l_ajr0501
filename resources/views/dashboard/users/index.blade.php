@@ -16,7 +16,6 @@
                 <th scope="col">Role</th>
                 <th scope="col">Email</th>
                 <th scope="col">Status</th>
-                <th scope="col">Action</th>
             </tr>
         </thead>
 
@@ -42,9 +41,7 @@
                             Tidak Aktif
                         @endif
                     </td>
-                    <td>
-                        <a href="" class="badge bg-danger mx-1"><span data-feather="trash-2"></span></a>
-                    </td>
+
                 </tr>
             @endforeach
         </tbody>

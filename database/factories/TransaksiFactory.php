@@ -27,7 +27,7 @@ class TransaksiFactory extends Factory
             'tanggal_pengembalian' => $this->faker->dateTimeBetween('-6 day', '-1 day'),
             'metode_pembayaran' => $this->faker->randomElement(['Uang Tunai', 'Debit', 'Kredit', 'Gopay', 'Shopeepay', 'OVO', 'DANA']),
             'rating_driver' => $this->faker->numberBetween(2,5),
-            'penilaian_driver' => $this->faker->text(mt_rand(8,50)),
+            'penilaian_driver' => $this->faker->text(mt_rand(8,50)),    
             'rating_rental' => $this->faker->numberBetween(2,5),
             'penilaian_rental' => $this->faker->text(mt_rand(10,50)),
         ];

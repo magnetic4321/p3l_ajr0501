@@ -25,7 +25,9 @@
                 <select class="form-select" name="promo_id" id="promo_id">
                     <option value="0">-</option>
                     @foreach ($promos as $promo)
-                        <option value="{{ $promo->id }}">{{ $promo->kode }}</option>
+                        @if ($promo->status == '1')
+                            <option value="{{ $promo->id }}">{{ $promo->kode }}</option>
+                        @endif
                     @endforeach
                 </select>
             </div>

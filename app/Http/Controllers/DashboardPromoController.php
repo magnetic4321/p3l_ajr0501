@@ -115,7 +115,8 @@ class DashboardPromoController extends Controller
      */
     public function destroy(Promo $promo)
     {
-        Promo::destroy($promo->id);
+        $validatedData['status'] = '2';
+        Promo::where('id', $promo->id)->update($validatedData);
         return redirect('/dashboard/promos')->with('success', 'Promo berhasil dihapus');
     }
 }

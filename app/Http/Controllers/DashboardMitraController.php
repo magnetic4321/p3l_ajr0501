@@ -115,7 +115,8 @@ class DashboardMitraController extends Controller
      */
     public function destroy(Mitra $mitra)
     {
-        Mitra::destroy($mitra->id);
+        $validatedData['status'] = '2';
+        Mitra::where('id', $mitra->id)->update($validatedData);
         return redirect('/dashboard/mitras')->with('success', 'Data mitra berhasil dihapus');
     }
 

@@ -13,6 +13,7 @@
 
     {{-- App Style --}}
     <link rel="stylesheet" href="/css/style.css">
+    <link href="/css/carousel.css" rel="stylesheet">
 
     <link rel="shortcut icon" href="img/ajr.png">
     
@@ -23,7 +24,7 @@
 
     @include('partials.navbar')
 
-      <div class="container mt-4">
+      <div class="mt-4">
         @yield('container')
       </div>
 

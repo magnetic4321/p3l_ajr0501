@@ -47,6 +47,7 @@
       </thead>
       <tbody>
           @foreach($mobils as $mobil)
+          @if ($mobil->status != '2')
             <tr>
               <td>
                 <a href="/dashboard/mobils/{{ $mobil->no_plat }}" class="badge bg-primary mx-1 text-decoration-none">{{ $loop->iteration }}</a>
@@ -76,6 +77,7 @@
               </td>
               @endcan
             </tr>
+          @endif
           @endforeach
       </tbody>
     </table>

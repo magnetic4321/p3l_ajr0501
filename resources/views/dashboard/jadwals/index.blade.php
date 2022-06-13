@@ -12,7 +12,7 @@
 </div>
 @endif
 
-{{-- <a href="/dashboard/jadwals/create" class="btn btn-primary">Tambah Jadwal Baru</a> --}}
+<a href="/dashboard/jadwals/create" class="btn btn-primary">Tambah Jadwal Baru</a>
 
 <div class="table-responsive col-lg-2 py-2">
     <table class="table table-striped table-sm">
@@ -21,7 +21,7 @@
             <th scope="col">#</th>
             <th scope="col">Hari</th>
             <th scope="col">Shift</th>
-            {{-- <th scope="col">Action</th> --}}
+            <th scope="col">Action</th>
         </tr>
         </thead>
         <tbody>
@@ -32,14 +32,9 @@
                 </td>
                 <td>{{ $jadwal->hari }}</td>
                 <td>{{ $jadwal->shift }}</td>
-                {{-- <td>
+                <td>
                     <a href="/dashboard/jadwals/{{ $jadwal->id }}/edit" class="badge bg-success"><span data-feather="edit-2"></span></a>
-                    <form action="/dashboard/jadwals/{{ $jadwal->id }}" method="post" class="d-inline">
-                        @method('delete')
-                        @csrf
-                        <button class="badge bg-danger border-0 mx-1" onclick="return confirm('Are you sure?')"><span data-feather="trash-2"></span></button>
-                    </form>
-                </td> --}}
+                </td>
             </tr>
             @endforeach
         </tbody>

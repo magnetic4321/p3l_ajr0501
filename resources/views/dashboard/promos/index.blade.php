@@ -45,34 +45,36 @@
       </thead>
       <tbody>
           @foreach($promos as $promo)
-            <tr>
-              <td>{{ $loop->iteration }}</td>
-              <td>{{ $promo->kode }}</td>
-              <td>{{ $promo->keterangan }}</td>
-              {{-- <form method="post" action="/dashboard/promos">
-                @method('put')
-                @csrf --}}
-                <td>
-                  <a href="" class="badge bg-dark text-light text-decoration-none">
-                  @if ($promo->status == '1')
-                    Aktif
-                  @else
-                    Tidak Aktif
-                  @endif
-                </td>
-              {{-- </form> --}}
-              <td>{{ $promo->diskon }} %</td>
-              @can('pegawai')
-                <td>
-                  <a href="/dashboard/promos/{{ $promo->kode }}/edit" class="badge bg-success"><span data-feather="edit-2"></span></a>
-                  <form action="/dashboard/promos/{{ $promo->kode }}" method="post" class="d-inline">
-                    @method('delete')
-                    @csrf
-                    <button class="badge bg-danger border-0 mx-1" onclick="return confirm('Are you sure?')"><span data-feather="trash-2"></span></button>
-                  </form>
-                </td>
-              @endcan
-            </tr>
+            @if ($promo->status != '2')
+              <tr>
+                <td>{{ $loop->iteration }}</td>
+                <td>{{ $promo->kode }}</td>
+                <td>{{ $promo->keterangan }}</td>
+                {{-- <form method="post" action="/dashboard/promos">
+                  @method('put')
+                  @csrf --}}
+                  <td>
+                    <a href="" class="badge bg-dark text-light text-decoration-none">
+                    @if ($promo->status == '1')
+                      Aktif
+                    @else
+                      Tidak Aktif
+                    @endif
+                  </td>
+                {{-- </form> --}}
+                <td>{{ $promo->diskon }} %</td>
+                @can('pegawai')
+                  <td>
+                    <a href="/dashboard/promos/{{ $promo->kode }}/edit" class="badge bg-success"><span data-feather="edit-2"></span></a>
+                    <form action="/dashboard/promos/{{ $promo->kode }}" method="post" class="d-inline">
+                      @method('delete')
+                      @csrf
+                      <button class="badge bg-danger border-0 mx-1" onclick="return confirm('Are you sure?')"><span data-feather="trash-2"></span></button>
+                    </form>
+                  </td>
+                @endcan
+              </tr>
+            @endif
           @endforeach
       </tbody>
     </table>

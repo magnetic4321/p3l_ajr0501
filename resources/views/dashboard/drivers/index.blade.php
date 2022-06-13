@@ -36,7 +36,6 @@
           <th scope="col">Nomor Telepon</th>
           <th scope="col">Berbahasa Inggris</th>
           <th scope="col">Status</th>
-          <th scope="col">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -65,9 +64,6 @@
                   @endif
                 </a>
               </td>
-              <td>
-                <a href="" class="badge bg-danger mx-1"><span data-feather="trash-2"></span></a>
-            </td>
             </tr>
           @endforeach
       </tbody>

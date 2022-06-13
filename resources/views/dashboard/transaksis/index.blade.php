@@ -49,10 +49,8 @@
                     <th scope="col">Tanggal Mulai</th>
                     <th scope="col">Tanggal Selesai</th>
                     <th scope="col">Metode Pembayaran</th>
-                    <th scope="col">Action</th>
                 </tr>
             </thead>
-
             <tbody>
                 @foreach($transaksis as $transaksi)
                     <tr>
@@ -91,10 +89,6 @@
                         <td>{{ $transaksi->tanggal_mulai }}</td>
                         <td>{{ $transaksi->tanggal_selesai }}</td>
                         <td>{{ $transaksi->metode_pembayaran }}</td>
-                        <td>
-                            <a href="" class="badge bg-success"><span data-feather="edit-2"></span></a>
-                            <a href="" class="badge bg-danger mx-1"><span data-feather="trash-2"></span></a>
-                        </td>
                     </tr>
                 @endforeach
             </tbody>

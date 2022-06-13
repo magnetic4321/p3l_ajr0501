@@ -144,7 +144,9 @@ class DashboardMobilController extends Controller
      */
     public function destroy(Mobil $mobil)
     {
-        Mobil::destroy($mobil->id);
+        $validatedData['status'] = '2';
+        Mobil::where('id', $mobil->id)->update($validatedData);
+        // Mobil::destroy($mobil->id);
         return redirect('/dashboard/mobils')->with('success', 'Data mobil berhasil dihapus');
     }
 }

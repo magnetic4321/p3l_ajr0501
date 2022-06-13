@@ -21,7 +21,6 @@
                 <th scope="col">Jenis Kelamin</th>
                 <th scope="col">Alamat</th>
                 <th scope="col">Nomor Telepon</th>
-                <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -34,9 +33,6 @@
                     <td>{{ $customer->user->jenis_kelamin }}</td>
                     <td>{{ $customer->user->alamat }}</td>
                     <td>{{ $customer->user->no_telp }}</td>
-                    <td>
-                        <a href="" class="badge bg-danger mx-1"><span data-feather="trash-2"></span></a>
-                    </td>
                 </tr>
             @endforeach
         </tbody>

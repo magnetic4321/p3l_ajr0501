@@ -30,7 +30,6 @@
                     <td>{{ $pegawai->user->email }}</td>
                     <td>
                         <a href="/dashboard/pegawais/{{ $pegawai->slug }}/edit" class="badge bg-success"><span data-feather="edit-2"></span></a>
-                        <a href="" class="badge bg-danger mx-1"><span data-feather="trash-2"></span></a>
                     </td>
                 </tr>
             @endforeach
