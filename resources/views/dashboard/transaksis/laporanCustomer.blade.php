@@ -65,7 +65,7 @@
 </head>
 <body>
     <span class="heading">ATMA JAYA RENTAL</span>
-    <p>Top 5 customers has {{ $count }} total transactions.</p>
+    {{-- <p>Top 5 customers has {{ $count }} total transactions.</p> --}}
     <hr style="border:3px solid #f1f1f1">
 
     <div class="table-responsive col-lg-12 py-2">
